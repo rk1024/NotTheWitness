@@ -24,7 +24,7 @@ public class Board implements Paintable {
       drawnSet = new HashSet<Node>();
   private Stack<Node> drawnNodes = new Stack<Node>();
   private NodeGraph path = new NodeGraph(), drawn = new NodeGraph();
-  private boolean canHandleDrag = false;
+  private boolean canHandleDrag = false, isInvalid = false;
   
   public Board() {
     Node[][] grid = new Node[10][10];
@@ -37,8 +37,8 @@ public class Board implements Paintable {
         
         path.add(node);
         
-        if (c > 0 && Math.random() < .5) path.connect(node, row[c - 1]);
-        if (r > 0 && Math.random() < .5) path.connect(node, grid[r - 1][c]);
+        if (c > 0) path.connect(node, row[c - 1]);
+        if (r > 0) path.connect(node, grid[r - 1][c]);
       }
     }
     
@@ -100,7 +100,7 @@ public class Board implements Paintable {
     g.setColor(new Color(.5f, .5f, .5f));
     paintNodeGraph(path, g);
     
-    g.setColor(new Color(0f, .5f, 1f));
+    g.setColor(isInvalid ? new Color(.85f, .05f, .05f) : new Color(0f, .5f, 1f));
     paintNodeGraph(drawn, g);
     
     g.setColor(new Color(1f, 1f, 1f, .25f));
@@ -219,6 +219,7 @@ public class Board implements Paintable {
   }
   
   private boolean validate() {
+    return false; //TODO: Tell the player they're wrong here.
   }
   
   public void handlePress(MouseEvent e) {
@@ -228,6 +229,7 @@ public class Board implements Paintable {
     
     if (canHandleDrag) {
       mouseDraw(x, y);
+      isInvalid = false;
     }
   }
   
@@ -237,11 +239,13 @@ public class Board implements Paintable {
   }
   
   public void handleRelease(MouseEvent e) {
-    if (!validate()) {
+    if (drawnNodes.size() < 2) {
       clearDrawn();
       updateOpenNodes();
       updateHighlights();
     }
+    
+    isInvalid = drawnNodes.size() > 0 && drawnNodes.peek().getNodeType() == Node.TYPE_END && !validate();
   }
   
   public void updateOpenNodes() {
