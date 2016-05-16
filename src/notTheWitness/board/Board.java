@@ -66,8 +66,6 @@ public class Board implements Paintable {
       Node a = edge.getNodeA(),
           b = edge.getNodeB();
       
-      
-      
       double angle = Math.atan2(b.getY() - a.getY(), b.getX() - a.getX());
       
       g.fillPolygon(new int[] {
@@ -220,6 +218,9 @@ public class Board implements Paintable {
     }
   }
   
+  private boolean validate() {
+  }
+  
   public void handlePress(MouseEvent e) {
     int x = e.getX(), y = e.getY();
     
@@ -236,7 +237,7 @@ public class Board implements Paintable {
   }
   
   public void handleRelease(MouseEvent e) {
-    if (drawnNodes.size() == 1) {
+    if (!validate()) {
       clearDrawn();
       updateOpenNodes();
       updateHighlights();
