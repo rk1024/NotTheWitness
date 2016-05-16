@@ -24,11 +24,14 @@ public class Board implements Paintable {
       hlNodes = new HashSet<Node>(),
       drawnSet = new HashSet<Node>();
   private Stack<Node> drawnNodes = new Stack<Node>();
-  private NodeGraph path = new NodeGraph(), drawn = new NodeGraph();
+  private NodeGraph path = new NodeGraph(),
+  		drawn = new NodeGraph(),
+  		cells = new NodeGraph();
   private boolean canHandleDrag = false, isInvalid = false;
   
   public Board() {
-    Node[][] grid = new Node[10][10];
+    Node[][] grid = new Node[10][10],
+    		cellGrid = new Node[9][9];
     
     for (int r = 0; r < grid.length; r++) {
       Node[] row = grid[r];
@@ -41,6 +44,19 @@ public class Board implements Paintable {
         if (c > 0) path.connect(node, row[c - 1]);
         if (r > 0) path.connect(node, grid[r - 1][c]);
       }
+    }
+    
+    for (int r = 0; r < cellGrid.length; r++) {
+    	Node[] row = cellGrid[r];
+    	
+    	for (int c = 0; c < row.length; c++) {
+    		Node node = row[c] = new Node(c * 50 + 125, r * 50 + 125, Node.TYPE_NONE);
+    		
+    		cells.add(node);
+    		
+    		if (c > 0) cells.connect(node, row[c - 1]);
+    		if (r > 0) cells.connect(node, cellGrid[r - 1][c]);
+    	}
     }
     
     Node end = new Node(9 * 50 + 100 + 25, 5 * 50 + 100, Node.TYPE_END);
@@ -100,6 +116,9 @@ public class Board implements Paintable {
   }
   
   public void paint(Graphics2D g) {
+  	g.setColor(new Color(.1f, .85f, .1f));
+  	paintNodeGraph(cells, g);
+  	
     g.setColor(new Color(.5f, .5f, .5f));
     paintNodeGraph(path, g);
     

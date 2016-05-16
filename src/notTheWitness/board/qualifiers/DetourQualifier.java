@@ -2,7 +2,7 @@ package notTheWitness.board.qualifiers;
 
 import java.awt.*;
 
-public class DetourQualifier extends Qualifier {
+public class DetourQualifier extends NodeQualifier {
 	public static final int RADIUS = 4,
 			WIDTH = 8;
 	

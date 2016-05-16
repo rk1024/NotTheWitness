@@ -11,17 +11,12 @@ public class Node {
   
   private int x, y;
   private int nodeType;
-  private Qualifier qual;
+  private NodeQualifier qual;
   
-  public Node(int x, int y, int nodeType, Qualifier qual) {
+  public Node(int x, int y, int nodeType) {
     this.x = x;
     this.y = y;
     this.nodeType = nodeType;
-    this.qual = qual;
-  }
-  
-  public Node(int x, int y, int nodeType) {
-  	this(x, y, nodeType, null);
   }
   
   public Node(int x, int y) {
@@ -32,8 +27,8 @@ public class Node {
   public int getY() { return y; }
   public int getNodeType() { return nodeType; }
   
-  public Qualifier getQualifier() { return qual; }
-  public void setQualifier(Qualifier value) {
+  public NodeQualifier getQualifier() { return qual; }
+  public void setQualifier(NodeQualifier value) {
   	if (hasQualifier()) qual.detach();
   	qual = value;
   	qual.attach(this);
