@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import notTheWitness.*;
+import notTheWitness.board.qualifiers.*;
 
 public class Board implements Paintable {
   public static final int PATH_RADIUS = 10,
@@ -46,6 +47,8 @@ public class Board implements Paintable {
     
     path.add(end);
     path.connect(end, grid[5][9]);
+    
+    grid[0][1].setQualifier(new DetourQualifier());
     
     updateOpenNodes();
     updateHighlights();
@@ -99,6 +102,11 @@ public class Board implements Paintable {
   public void paint(Graphics2D g) {
     g.setColor(new Color(.5f, .5f, .5f));
     paintNodeGraph(path, g);
+    
+    for (Node node : path.getNodes()) {
+    	if (node.hasQualifier())
+    		node.getQualifier().paint(g);
+    }
     
     g.setColor(isInvalid ? new Color(.85f, .05f, .05f) : new Color(0f, .5f, 1f));
     paintNodeGraph(drawn, g);
@@ -248,7 +256,7 @@ public class Board implements Paintable {
     isInvalid = drawnNodes.size() > 0 && drawnNodes.peek().getNodeType() == Node.TYPE_END && !validate();
   }
   
-  public void updateOpenNodes() {
+  private void updateOpenNodes() {
     closeAllNodes();
     if (drawnNodes.size() == 0) {
       for (Node node : path.getNodes()) {
@@ -266,7 +274,7 @@ public class Board implements Paintable {
     }
   }
   
-  public void updateHighlights() {
+  private void updateHighlights() {
     clearHighlights();
     if (drawnNodes.size() < 2) {
       for (Node node : path.getNodes()) {
