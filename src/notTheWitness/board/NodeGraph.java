@@ -18,6 +18,8 @@ public class NodeGraph {
   public Iterable<Edge> getEdges() { return edges; }
   public Iterable<Edge> getEdges(Node connectedTo) { return edgeMap.get(connectedTo).values(); }
   
+  public boolean contains(Node node) { return nodes.contains(node); }
+  
   public boolean add(Node node) {
     return nodes.add(node);
   }

@@ -246,7 +246,16 @@ public class Board implements Paintable {
   }
   
   private boolean validate() {
-    return false; //TODO: Tell the player they're wrong here.
+	for(Node node : path.getNodes()) {
+		if(node.hasQualifier()){
+		  if (node.getQualifier() instanceof DetourQualifier) {
+			  if(!drawn.contains(node)){
+				  return false;
+			  }
+		  }
+		}
+	}
+    return true; //TODO: Tell the player they're wrong here.
   }
   
   public void handlePress(MouseEvent e) {
