@@ -12,7 +12,11 @@ public class CellGraph implements Paintable {
     
     {
       for (Node node : graph.getNodes()) {
-        startLoop: for (ArrayList<Node> list : findCycle(node)) {
+        ArrayList<ArrayList<Node>> lists = findCycle(node);
+        
+        if (lists == null) continue;
+        
+        startLoop: for (ArrayList<Node> list : lists) {
           if (list == null)
             continue;
             
@@ -40,10 +44,10 @@ public class CellGraph implements Paintable {
   }
   
   private ArrayList<ArrayList<Node>> findCycle(Node start) {
+    ArrayList<ArrayList<Node>> ret = new ArrayList<ArrayList<Node>>();
+    
     for (Edge heading : graph.getEdges(start)) {
       if (!graph.contains(start)) return null;
-      
-      ArrayList<ArrayList<Node>> ret = new ArrayList<ArrayList<Node>>();
       
       HashSet<Node> pool = new HashSet<Node>();
       HashMap<Node, Double> distMap = new HashMap<Node, Double>();
@@ -137,8 +141,7 @@ public class CellGraph implements Paintable {
       }
       
       ret.add(list);
-    } 
-  }
+    }
 
     return ret;
   }
