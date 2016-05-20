@@ -8,6 +8,7 @@ import java.util.*;
 import javax.swing.*;
 
 import notTheWitness.board.*;
+import notTheWitness.board.qualifiers.*;
 
 public class Game extends JPanel {
   public static final int CUR_RADIUS = 8,
@@ -82,8 +83,9 @@ public class Game extends JPanel {
     tk = getToolkit();
     hiddenCursor = tk.createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), "hidden");
     setCursor(hiddenCursor);
-    
-    this.currentBoard = new Board();
+    NodeQualifier[][]quals = new NodeQualifier[10][10];
+    quals[0][1]= new DetourQualifier();
+    this.currentBoard = BoardFactory.makeBoard(quals, 10, 10);
     
     win.setVisible(true);
   }
