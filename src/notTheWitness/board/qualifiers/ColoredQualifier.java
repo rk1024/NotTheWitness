@@ -2,7 +2,9 @@ package notTheWitness.board.qualifiers;
 
 import java.awt.*;
 
-public class ColoredQualifier extends NodeQualifier {
+import notTheWitness.board.*;
+
+public class ColoredQualifier extends Qualifier<Node> {
 	private Color color;
 	
 	public ColoredQualifier(Color color) {
@@ -12,8 +14,7 @@ public class ColoredQualifier extends NodeQualifier {
 	public Color getColor() { return color; }
 
 	@Override
-	public void paint(Graphics2D g) {
+	public void paint(Graphics2D g, int x, int y) {
 		// TODO Auto-generated method stub
-		
 	}
 }
