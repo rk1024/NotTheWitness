@@ -1,15 +1,25 @@
 package notTheWitness.board;
 
 public class Edge {
+  public static final int TYPE_NORMAL = 0,
+      TYPE_NONE = 1,
+      TYPE_BLOCKED = 2;
+  
+  private int edgeType;
   private Node nodeA, nodeB;
-  private Edge linkedEdge = null;
   
   public Node getNodeA() { return nodeA; }
   public Node getNodeB() { return nodeB; }
+  public int getEdgeType() { return edgeType; }
   
-  public Edge(Node a, Node b) {
+  public Edge(Node a, Node b, int type) {
     nodeA = a;
     nodeB = b;
+    edgeType = type;
+  }
+  
+  public Edge(Node a, Node b) {
+    this(a, b, TYPE_NORMAL);
   }
   
   public boolean connects(Node a, Node b) {
@@ -23,6 +33,7 @@ public class Edge {
     return null;
   }
   
-  public Edge getLinkedEdge() { return linkedEdge; }
-  public void setLinkedEdge(Edge value) { linkedEdge = value; }
+  public boolean isDrawable() {
+    return !(edgeType == TYPE_NONE || edgeType == TYPE_BLOCKED);
+  }
 }

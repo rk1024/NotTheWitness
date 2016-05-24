@@ -8,15 +8,27 @@ public class Cell {
   private HashSet<Edge> edges = new HashSet<Edge>();
   private int x, y;
   
-  public Cell(NodeGraph sourceGraph, ArrayList<Node> nodeList) {
-    this.nodeList = nodeList;
+  public Cell(NodeGraph sourceGraph, Node[] nodes) {
+    nodeList = new ArrayList<Node>();
+    for (Node node : nodes) nodeList.add(node);
+    
+    init(sourceGraph);
+  }
+  
+  public Cell(NodeGraph sourceGraph, ArrayList<Node> nodes) {
+    nodeList = nodes;
+    
+    init(sourceGraph);
+  }
+  
+  private void init(NodeGraph sourceGraph) {
     for (int i = 0; i < nodeList.size(); i++) {
       Node node = nodeList.get(i);
       nodes.add(node);
       edges.add(sourceGraph.getEdge(node, nodeList.get((i + 1) % nodeList.size())));
     }
     
-    {
+    if (nodeList.size() > 0) {
       double area = 0, cx = 0, cy = 0;
       
       for (int i = 0; i < nodeCount(); i++) {
@@ -30,7 +42,22 @@ public class Cell {
         area += cross;
       }
       
-      area *= 3;
+      if (area == 0) {
+        HashSet<Long> posSet = new HashSet<Long>();
+        cx = cy = area = 0;
+        
+        for (Node node : nodeList) {
+          if (posSet.add((long)node.getX() << 32 + (long)node.getY())) {
+            cx += node.getX();
+            cy += node.getY();
+            ++area;
+          }
+        }
+      }
+      else {
+        area *= 3;
+      }
+      
       cx /= area;
       cy /= area;
       
@@ -50,4 +77,16 @@ public class Cell {
   
   public boolean contains(Node node) { return nodes.contains(node); }
   public boolean contains(Edge edge) { return edges.contains(edge); }
+  
+  public int indexOf(Node node) { return nodeList.indexOf(node); }
+  
+  public boolean equals(Cell other) {
+    if (this.nodeList.size() != other.nodeList.size()) return false;
+    
+    for (int i = 0; i < this.nodeList.size(); i++) {
+      if (this.nodeList.get(i) != other.nodeList.get(i)) return false;
+    }
+    
+    return true;
+  }
 }

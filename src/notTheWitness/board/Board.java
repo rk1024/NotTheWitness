@@ -12,6 +12,8 @@ public class Board implements Paintable {
       PATH_WIDTH = PATH_RADIUS + PATH_RADIUS,
       SP_RADIUS = 20,
       SP_WIDTH = SP_RADIUS + SP_RADIUS,
+      GAP_RADIUS = 6,
+      GAP_RADIUS_SQ = GAP_RADIUS * GAP_RADIUS,
       HL_BORDER = 5,
       HL1_RADIUS = PATH_RADIUS + HL_BORDER,
       HL1_WIDTH = HL1_RADIUS + HL1_RADIUS,
@@ -46,24 +48,41 @@ public class Board implements Paintable {
   private boolean highlighted(Node node) { return hlNodes.contains(node); }
   private void clearHighlights() { hlNodes.clear(); }
   
+  private Polygon line(double x1, double y1, double x2, double y2, double radius) {
+    Polygon p = new Polygon();
+    
+    double angle = Math.atan2(y2 - y1, x2 - x1);
+    
+    p.addPoint((int)Math.round(x1 + Math.sin(angle) * radius), (int)Math.round(y1 - Math.cos(angle) * radius));
+    p.addPoint((int)Math.round(x2 + Math.sin(angle) * radius), (int)Math.round(y2 - Math.cos(angle) * radius));
+    p.addPoint((int)Math.round(x2 - Math.sin(angle) * radius), (int)Math.round(y2 + Math.cos(angle) * radius));
+    p.addPoint((int)Math.round(x1 - Math.sin(angle) * radius), (int)Math.round(y1 + Math.cos(angle) * radius));
+    
+    return p;
+  }
+  
   private void paintNodeGraph(NodeGraph graph, Graphics2D g) {
     for (Edge edge : graph.getEdges()) {
       Node a = edge.getNodeA(),
           b = edge.getNodeB();
       
-      double angle = Math.atan2(b.getY() - a.getY(), b.getX() - a.getX());
-      
-      g.fillPolygon(new int[] {
-          (int)Math.round(a.getX() + Math.sin(angle) * PATH_RADIUS),
-          (int)Math.round(b.getX() + Math.sin(angle) * PATH_RADIUS),
-          (int)Math.round(b.getX() - Math.sin(angle) * PATH_RADIUS),
-          (int)Math.round(a.getX() - Math.sin(angle) * PATH_RADIUS),
-      }, new int[] {
-          (int)Math.round(a.getY() - Math.cos(angle) * PATH_RADIUS),
-          (int)Math.round(b.getY() - Math.cos(angle) * PATH_RADIUS),
-          (int)Math.round(b.getY() + Math.cos(angle) * PATH_RADIUS),
-          (int)Math.round(a.getY() + Math.cos(angle) * PATH_RADIUS),
-      }, 4);
+      switch (edge.getEdgeType()) {
+      case Edge.TYPE_NONE: break;
+      case Edge.TYPE_NORMAL:
+        g.fill(line(a.getX(), a.getY(), b.getX(), b.getY(), PATH_RADIUS));
+        break;
+        
+      case Edge.TYPE_BLOCKED:
+        if (hitRadius(a, b.getX(), b.getY()) <= GAP_RADIUS_SQ) break;
+        
+        double angle = Math.atan2(b.getY() - a.getY(), b.getX() - a.getX()),
+          mx = (a.getX() + b.getX()) / 2d, my = (a.getY() + b.getY()) / 2d;
+
+        g.fill(line(a.getX(), a.getY(), mx - GAP_RADIUS * Math.cos(angle), my - GAP_RADIUS * Math.sin(angle), PATH_RADIUS));
+        g.fill(line(b.getX(), b.getY(), mx + GAP_RADIUS * Math.cos(angle), my + GAP_RADIUS * Math.sin(angle), PATH_RADIUS));
+        
+        break;
+      }
     }
     
     for (Node node : graph.getNodes()) {
@@ -87,7 +106,7 @@ public class Board implements Paintable {
     
     for (Node node : path.getNodes()) {
     	if (node.hasQualifier())
-    		node.getQualifier().paint(g);
+    		node.getQualifier().paint(g, node.getX(), node.getY());
     }
     
     g.setColor(isInvalid ? new Color(.85f, .05f, .05f) : new Color(0f, .5f, 1f));
@@ -211,16 +230,17 @@ public class Board implements Paintable {
   }
   
   private boolean validate() {
-	for(Node node : path.getNodes()) {
-		if(node.hasQualifier()){
-		  if (node.getQualifier() instanceof DetourQualifier) {
-			  if(!drawn.contains(node)){
-				  return false;
-			  }
-		  }
-		}
-	}
-    return true; //TODO: Tell the player they're wrong here.
+  	for(Node node : path.getNodes()) {
+  		if(node.hasQualifier()) {
+  		  if (node.getQualifier() instanceof NodeDetourQualifier) {
+  			  if(!drawn.contains(node)) {
+  				  return false;
+  			  }
+  		  }
+  		}
+  	}
+  	
+    return true;
   }
   
   public void handlePress(MouseEvent e) {
@@ -261,6 +281,8 @@ public class Board implements Paintable {
     
     Node peek = drawnNodes.peek();
     for (Edge edge : path.getEdges(peek)) {
+      if (!edge.isDrawable()) continue;
+      
       Node other = edge.other(peek);
       
       if (!drawnSet.contains(other)) openNode(other);

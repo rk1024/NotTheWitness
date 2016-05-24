@@ -9,6 +9,7 @@ import javax.swing.*;
 
 import notTheWitness.board.*;
 import notTheWitness.board.qualifiers.*;
+import notTheWitness.util.HashMap2D;
 
 public class Game extends JPanel {
   public static final int CUR_RADIUS = 8,
@@ -83,9 +84,23 @@ public class Game extends JPanel {
     tk = getToolkit();
     hiddenCursor = tk.createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), "hidden");
     setCursor(hiddenCursor);
-    NodeQualifier[][]quals = new NodeQualifier[10][10];
-    quals[0][1]= new DetourQualifier();
-    this.currentBoard = BoardFactory.makeBoard(quals, 10, 10);
+    
+    {
+      
+      HashMap2D<Integer, Integer, Qualifier<Node>> nodeQuals = new HashMap2D<Integer, Integer, Qualifier<Node>>();
+      nodeQuals.put(0, 1, new NodeDetourQualifier());
+      nodeQuals.put(1, 0, new NodeDetourQualifier());
+
+      int[][] hEdgeType = new int[10][9],
+          vEdgeType = new int[9][10];
+      
+      for (int i = 1; i <= 8; i++)
+        vEdgeType[0][i] = Edge.TYPE_NONE;
+      
+      hEdgeType[1][2] = Edge.TYPE_BLOCKED;
+      
+      this.currentBoard = BoardFactory.makeBoard(nodeQuals, hEdgeType, vEdgeType, 10, 10, BoardFactory.END_SIDE_RIGHT, 2);
+    }
     
     win.setVisible(true);
   }

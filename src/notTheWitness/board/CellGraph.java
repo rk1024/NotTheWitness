@@ -10,152 +10,104 @@ public class CellGraph implements Paintable {
   public CellGraph(NodeGraph graph) {
     this.graph = graph;
     
-    {
-      for (Node node : graph.getNodes()) {
-        ArrayList<ArrayList<Node>> lists = findCycle(node);
-        
-        if (lists == null) continue;
-        
-        startLoop: for (ArrayList<Node> list : lists) {
-          if (list == null)
-            continue;
-            
-          for (Cell cell : cells) {
-            if (cell.nodeCount() != list.size()) continue;
-              
-            {
-              boolean allContained = true;
-              
-              for (Node item : list) {
-                if (!cell.contains(item)) {
-                  allContained = false;
-                  break;
-                }
-              }
-              
-              if (allContained) continue startLoop;
-            }
-          }
-          
-          cells.add(new Cell(graph, list));
-        }
-      }
-    }
+    this.cells = findCells();
   }
   
-  private ArrayList<ArrayList<Node>> findCycle(Node start) {
-    ArrayList<ArrayList<Node>> ret = new ArrayList<ArrayList<Node>>();
+  private HashSet<Cell> findCells() {
+    HashSet<Cell> cells = new HashSet<Cell>();
+    HashSet<Node> checked = new HashSet<Node>();
+    ArrayList<Node> pool = new ArrayList<Node>();
     
-    for (Edge heading : graph.getEdges(start)) {
-      if (!graph.contains(start)) return null;
-      
-      HashSet<Node> pool = new HashSet<Node>();
-      HashMap<Node, Double> distMap = new HashMap<Node, Double>();
-      HashMap<Node, Node> prevMap = new HashMap<Node, Node>();
-      
-      for (Node node : graph.getNodes()) {
-        pool.add(node);
-        distMap.put(node, Double.POSITIVE_INFINITY);
-      }
-      
-      distMap.put(start, 0d);
-      
-      while (pool.size() > 0) {
-        Node min = null;
-        {
-          double dist = 0;
+    for (Node node : graph.getNodes()) pool.add(node);
+    
+    for (int i = 0; i < pool.size() - 2; i++) {
+      checked.add(pool.get(i));
+      for (int j = i + 1; j < pool.size() - 1; j++) {
+        if (!graph.connected(pool.get(i), pool.get(j))) continue;
+        
+        ArrayList<ArrayList<Node>> paths = new ArrayList<ArrayList<Node>>();
+        
+        for (int k = j + 1; k < pool.size(); k++) {
+          if (!graph.connected(pool.get(i), pool.get(k))) continue;
           
-          for (Node node : pool) {
-            if (min == null || distMap.get(node) < dist) {
-              min = node;
-              dist = distMap.get(node);
-            }
+          if (graph.connected(pool.get(j), pool.get(k))) {
+            cells.add(new Cell(graph, new Node[] {
+              pool.get(i),
+              pool.get(j),
+              pool.get(k),
+            }));
           }
+          
+          ArrayList<Node> path = new ArrayList<Node>(3);
+          path.add(pool.get(j));
+          path.add(pool.get(i));
+          path.add(pool.get(k));
+          paths.add(path);
         }
         
-        pool.remove(min);
-        
-        for (Edge edge : graph.getEdges(min)) {
-          if (min == start && edge != heading) continue;
-          //if (!edgePool.contains(edge)) continue;
+        while (paths.size() > 0) {
+          ArrayList<Node> path = paths.remove(0);
+          Node k = path.get(path.size() - 1);
           
-          Node other = edge.other(min);
-          
-          if (pool.contains(other)) {
-            double alt = distMap.get(min) + 1;
+          chkLoop: for (int m = i + 1; m < pool.size(); m++) {
+            if (path.contains(pool.get(m)) || !graph.connected(pool.get(m), k)) continue chkLoop;
             
-            if (alt < distMap.get(other)) {
-              distMap.put(other, alt);
-              prevMap.put(other, min);
+            boolean chord = false;
+            for (int n = 1; n < path.size() - 1; n++) {
+              if (graph.connected(pool.get(m), path.get(n))) {
+                chord = true;
+                break;
+              }
             }
-          }
-          
-          if (min == start) break;
-        }
-        {
-          boolean allClosed = true;
-          for (Edge edge : graph.getEdges(start)) {
-            if (prevMap.get(edge.other(start)) != null) {
-              allClosed = false;
-              break;
-            }
-          }
-          
-          if (allClosed) break;
-        }
-      }
-      
-      {
-        Node min = null;
-        double dist = 0;
-        
-        for (Edge edge : graph.getEdges(start)) {
-          //if (!edgePool.contains(edge)) continue;
-          
-          Node other = edge.other(start);
-          
-          if (prevMap.get(other) != start /*&& nodePool.contains(other)*/ && (min == null || distMap.get(other) < dist)) {
-            min = other;
-            dist = distMap.get(other);
-          }
-        }
-        
-        if (min != null) {
-          distMap.put(start, dist + 1);
-          prevMap.put(start, min);
-        }
-      }
-      
-      if (prevMap.get(start) == null) return null;
-      
-      ArrayList<Node> list = new ArrayList<Node>();
-      HashSet<Node> set = new HashSet<Node>();
-      {
-        Node node = start;
-        
-        do {
-          if (!set.add(node)) break;
-          list.add(node);
-          node = prevMap.get(node);
-        } while (node != null);
-      }
-      
-      ret.add(list);
-    }
+            
+            if (chord) continue chkLoop;
+            
+            ArrayList<Node> newPath = new ArrayList<Node>(path.size() + 1);
+            newPath.addAll(path);
+            newPath.add(pool.get(m));
+            
+            Polygon x = new Polygon();
 
-    return ret;
+            for (Node node : newPath)
+              x.addPoint(node.getX(), node.getY());
+            
+            for (Node node : graph.getNodes()) {
+              if (newPath.contains(node)) continue;
+              
+              if (x.contains(node.getX(), node.getY())) {
+                continue chkLoop;
+              }
+            }
+
+            if (graph.connected(pool.get(m), pool.get(j))) {
+              cells.add(new Cell(graph, newPath));
+              continue chkLoop;
+            }
+            
+            int hash = 0;
+            
+            for (Node node : newPath)
+              hash += node.hashCode();
+            
+            paths.add(newPath);
+          }
+        }
+      }
+    }
+    
+    return cells;
   }
+  
   
   public void paint(Graphics2D g) {
     for (Cell cell : cells){
-      Polygon p = new Polygon();
+      //Polygon p = new Polygon();
       
-      for (Node node : cell.getNodes()) {
-        p.addPoint(node.getX(), node.getY());
-      }
+      //for (Node node : cell.getNodes())
+        //p.addPoint(node.getX(), node.getY());
       
-      g.setColor(new Color(1f, 0f, 0f, .5f));
-      g.fill(p);
+      //g.setColor(new Color(1f, 0f, 0f, .5f));
+      //g.fill(p);
       
       g.setStroke(new BasicStroke(2));
       g.setColor(new Color(0f, 0.5f, 1f));

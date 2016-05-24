@@ -63,11 +63,11 @@ public class NodeGraph {
     return getEdge(nodeA, nodeB) != null;
   }
   
-  public Edge connect(Node nodeA, Node nodeB) {
+  public Edge connect(Node nodeA, Node nodeB, int edgeType) {
     if (!(nodes.contains(nodeA) && nodes.contains(nodeB))) return null;
 
     if (!connected(nodeA, nodeB)) {
-      Edge edge = new Edge(nodeA, nodeB);
+      Edge edge = new Edge(nodeA, nodeB, edgeType);
       
       edges.add(edge);
       putEdge(nodeA, nodeB, edge);
@@ -77,5 +77,9 @@ public class NodeGraph {
     }
     
     return null;
+  }
+  
+  public Edge connect(Node nodeA, Node nodeB) {
+    return connect(nodeA, nodeB, Edge.TYPE_NORMAL);
   }
 }
