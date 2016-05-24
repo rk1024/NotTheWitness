@@ -2,10 +2,13 @@ package notTheWitness.board;
 
 import java.util.*;
 
+import notTheWitness.board.qualifiers.Qualifier;
+
 public class Cell {
   private ArrayList<Node> nodeList;
   private HashSet<Node> nodes = new HashSet<Node>();
   private HashSet<Edge> edges = new HashSet<Edge>();
+  private Qualifier<Cell> qual = null;
   private int x, y;
   
   public Cell(NodeGraph sourceGraph, Node[] nodes) {
@@ -79,6 +82,15 @@ public class Cell {
   public boolean contains(Edge edge) { return edges.contains(edge); }
   
   public int indexOf(Node node) { return nodeList.indexOf(node); }
+  
+  public Qualifier<Cell> getQualifier() { return qual; }
+  public void setQualifier(Qualifier<Cell> value) {
+    if (hasQualifier()) qual.detach();
+    qual = value;
+    if (hasQualifier()) qual.attach(this);
+  }
+  
+  public boolean hasQualifier() { return qual != null; }
   
   public boolean equals(Cell other) {
     if (this.nodeList.size() != other.nodeList.size()) return false;

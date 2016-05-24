@@ -10,7 +10,7 @@ public class Node {
       TYPE_END = 2;
   
   private int x, y, nodeType;
-  private Qualifier<Node> qual;
+  private Qualifier<Node> qual = null;
   
   public Node(int x, int y, int type) {
     this.x = x;
@@ -30,7 +30,7 @@ public class Node {
   public void setQualifier(Qualifier<Node> value) {
   	if (hasQualifier()) qual.detach();
   	qual = value;
-  	qual.attach(this);
+  	if (hasQualifier()) qual.attach(this);
 	}
   
   public boolean hasQualifier() { return qual != null; }

@@ -1,5 +1,7 @@
 package notTheWitness.board;
 
+import notTheWitness.board.qualifiers.*;
+
 public class Edge {
   public static final int TYPE_NORMAL = 0,
       TYPE_NONE = 1,
@@ -7,10 +9,7 @@ public class Edge {
   
   private int edgeType;
   private Node nodeA, nodeB;
-  
-  public Node getNodeA() { return nodeA; }
-  public Node getNodeB() { return nodeB; }
-  public int getEdgeType() { return edgeType; }
+  private Qualifier<Edge> qual = null;
   
   public Edge(Node a, Node b, int type) {
     nodeA = a;
@@ -21,6 +20,19 @@ public class Edge {
   public Edge(Node a, Node b) {
     this(a, b, TYPE_NORMAL);
   }
+  
+  public Node getNodeA() { return nodeA; }
+  public Node getNodeB() { return nodeB; }
+  public int getEdgeType() { return edgeType; }
+  
+  public Qualifier<Edge> getQualifier() { return qual; }
+  public void setQualifier(Qualifier<Edge> value) {
+    if (hasQualifier()) qual.detach();
+    qual = value;
+    if (hasQualifier()) qual.attach(this);
+  }
+  
+  public boolean hasQualifier() { return qual != null; }
   
   public boolean connects(Node a, Node b) {
     return (a == nodeA && b == nodeB) ||
