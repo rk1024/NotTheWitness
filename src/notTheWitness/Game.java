@@ -3,7 +3,6 @@ package notTheWitness;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
-import java.util.*;
 
 import javax.swing.*;
 
@@ -11,11 +10,11 @@ import notTheWitness.board.*;
 import notTheWitness.board.qualifiers.*;
 import notTheWitness.util.HashMap2D;
 
+@SuppressWarnings("serial")
 public class Game extends JPanel {
   public static final int CUR_RADIUS = 8,
       CUR_WIDTH = CUR_RADIUS + CUR_RADIUS;
   
-  private Component frame;
   private Board currentBoard;
   private JFrame win = new JFrame("Not the Witness");
   private Toolkit tk;
@@ -123,6 +122,7 @@ public class Game extends JPanel {
   }
   
   public static void main(String[] args) {
+    @SuppressWarnings("unused")
     Game game = new Game();
   }
 }

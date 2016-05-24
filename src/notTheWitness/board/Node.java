@@ -1,7 +1,5 @@
 package notTheWitness.board;
 
-import java.util.*;
-
 import notTheWitness.board.qualifiers.*;
 
 public class Node {

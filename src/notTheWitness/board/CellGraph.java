@@ -15,13 +15,11 @@ public class CellGraph implements Paintable {
   
   private HashSet<Cell> findCells() {
     HashSet<Cell> cells = new HashSet<Cell>();
-    HashSet<Node> checked = new HashSet<Node>();
     ArrayList<Node> pool = new ArrayList<Node>();
     
     for (Node node : graph.getNodes()) pool.add(node);
     
     for (int i = 0; i < pool.size() - 2; i++) {
-      checked.add(pool.get(i));
       for (int j = i + 1; j < pool.size() - 1; j++) {
         if (!graph.connected(pool.get(i), pool.get(j))) continue;
         
@@ -52,15 +50,10 @@ public class CellGraph implements Paintable {
           chkLoop: for (int m = i + 1; m < pool.size(); m++) {
             if (path.contains(pool.get(m)) || !graph.connected(pool.get(m), k)) continue chkLoop;
             
-            boolean chord = false;
             for (int n = 1; n < path.size() - 1; n++) {
-              if (graph.connected(pool.get(m), path.get(n))) {
-                chord = true;
-                break;
-              }
+              if (graph.connected(pool.get(m), path.get(n)))
+                continue chkLoop;
             }
-            
-            if (chord) continue chkLoop;
             
             ArrayList<Node> newPath = new ArrayList<Node>(path.size() + 1);
             newPath.addAll(path);
@@ -74,22 +67,11 @@ public class CellGraph implements Paintable {
             for (Node node : graph.getNodes()) {
               if (newPath.contains(node)) continue;
               
-              if (x.contains(node.getX(), node.getY())) {
-                continue chkLoop;
-              }
+              if (x.contains(node.getX(), node.getY())) continue chkLoop;
             }
 
-            if (graph.connected(pool.get(m), pool.get(j))) {
-              cells.add(new Cell(graph, newPath));
-              continue chkLoop;
-            }
-            
-            int hash = 0;
-            
-            for (Node node : newPath)
-              hash += node.hashCode();
-            
-            paths.add(newPath);
+            if (graph.connected(pool.get(m), pool.get(j))) cells.add(new Cell(graph, newPath));
+            else paths.add(newPath);
           }
         }
       }

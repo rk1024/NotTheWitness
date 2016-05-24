@@ -2,8 +2,6 @@ package notTheWitness.board.qualifiers;
 
 import java.awt.*;
 
-import notTheWitness.board.*;
-
 public abstract class Qualifier<T> {
   private T link;
   

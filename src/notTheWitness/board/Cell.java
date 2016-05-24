@@ -6,6 +6,7 @@ import notTheWitness.board.qualifiers.Qualifier;
 
 public class Cell {
   private ArrayList<Node> nodeList;
+  private ArrayList<Edge> edgeList;
   private HashSet<Node> nodes = new HashSet<Node>();
   private HashSet<Edge> edges = new HashSet<Edge>();
   private Qualifier<Cell> qual = null;
@@ -73,7 +74,7 @@ public class Cell {
   public int getY() { return y; }
   
   public Iterable<Node> getNodes() { return nodeList; }
-  public Iterable<Edge> getEdges() { return edges; }
+  public Iterable<Edge> getEdges() { return edgeList; }
   
   public int nodeCount() { return nodes.size(); }
   public int edgeCount() { return edges.size(); } // Should be equal to nodeCount, but semantics...
