@@ -1,10 +1,5 @@
 package notTheWitness.board;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-
-import notTheWitness.*;
 import notTheWitness.board.qualifiers.*;
 import notTheWitness.util.*;
 
@@ -16,7 +11,7 @@ public class BoardFactory {
   
 	public static Board makeBoard(HashMap2D<Integer, Integer, Qualifier<Node>> nodeQualifiers, int[][] hEdgeType, int[][] vEdgeType, int width, int height, int endSide, int endPos) {
 			NodeGraph path = new NodeGraph();
-		    Node[][] grid = new Node[height][width];
+		  Node[][] grid = new Node[height][width];
 		    		
 		    
 		    for (int r = 0; r < grid.length; r++) {
@@ -66,8 +61,9 @@ public class BoardFactory {
     	    
 		    end = new Node(endLink.getX() + endXOffs, endLink.getY() + endYOffs, Node.TYPE_END);
 		    
-    	    path.add(end);
-    	    path.connect(end, endLink);
+    	  path.add(end);
+    	  path.connect(end, endLink);
+    	  
 		    Board gameLevel = new Board(path);
 		    return gameLevel;
 	}

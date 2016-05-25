@@ -39,13 +39,13 @@ public class Board implements Paintable {
   }
   
   private void openNode(Node node) { openNodes.add(node); }
-  private void closeNode(Node node) { openNodes.remove(node); }
-  private boolean isNodeOpen(Node node) { return openNodes.contains(node); }
+//  private void closeNode(Node node) { openNodes.remove(node); }
+//  private boolean isNodeOpen(Node node) { return openNodes.contains(node); }
   private void closeAllNodes() { openNodes.clear(); }
   
   private void highlight(Node node) { hlNodes.add(node); }
-  private void unHighlight(Node node) { hlNodes.remove(node); }
-  private boolean highlighted(Node node) { return hlNodes.contains(node); }
+//  private void unHighlight(Node node) { hlNodes.remove(node); }
+//  private boolean highlighted(Node node) { return hlNodes.contains(node); }
   private void clearHighlights() { hlNodes.clear(); }
   
   private Polygon line(double x1, double y1, double x2, double y2, double radius) {
@@ -131,9 +131,9 @@ public class Board implements Paintable {
     return radius;
   }
   
-  private boolean hitTestNode(Node node, int x, int y) {
-    return hitRadius(node, x, y) <= HIT_RADIUS_SQ;
-  }
+//  private boolean hitTestNode(Node node, int x, int y) {
+//    return hitRadius(node, x, y) <= HIT_RADIUS_SQ;
+//  }
   
   private BoardHitResult hitTestNodes(Iterable<Node> nodes, int x, int y, boolean ignoreRadius) {
     Node hit = null;
