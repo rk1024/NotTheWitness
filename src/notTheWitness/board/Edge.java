@@ -23,7 +23,9 @@ public class Edge {
   
   public Node getNodeA() { return nodeA; }
   public Node getNodeB() { return nodeB; }
+  
   public int getEdgeType() { return edgeType; }
+  public void setEdgeType(int value) { edgeType = value; }
   
   public Qualifier<Edge> getQualifier() { return qual; }
   public void setQualifier(Qualifier<Edge> value) {
