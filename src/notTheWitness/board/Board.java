@@ -86,6 +86,19 @@ public class Board implements Paintable {
     }
     
     for (Node node : graph.getNodes()) {
+      if (graph.edgeCount(node) > 0) {
+        boolean allHidden = true;
+        
+        for (Edge edge : graph.getEdges(node)) {
+          if (edge.getEdgeType() != Edge.TYPE_NONE) {
+            allHidden = false;
+            break;
+          }
+        }
+        
+        if (allHidden) continue;
+      }
+      
       int radius, width;
       if (node.getNodeType() == Node.TYPE_START) {
         radius = SP_RADIUS;
