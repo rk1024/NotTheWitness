@@ -1,5 +1,7 @@
 package notTheWitness.board;
 
+import java.awt.*;
+
 import notTheWitness.board.qualifiers.*;
 import notTheWitness.util.*;
 
@@ -65,6 +67,11 @@ public class BoardFactory {
     	  path.connect(end, endLink);
     	  
 		    Board gameLevel = new Board(path);
+		    for(Cell cell : gameLevel.getCellGraph().getCells(new Node[] {
+		      grid[0][0],
+		    }))
+		      cell.setQualifier(new ColorSepQualifier(new Color(1f, .5f, 0f)));
+		    
 		    return gameLevel;
 	}
 }	

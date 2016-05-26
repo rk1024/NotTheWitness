@@ -38,6 +38,8 @@ public class Board implements Paintable {
     updateHighlights();
   }
   
+  public CellGraph getCellGraph() { return cells; }
+  
   private void openNode(Node node) { openNodes.add(node); }
 //  private void closeNode(Node node) { openNodes.remove(node); }
 //  private boolean isNodeOpen(Node node) { return openNodes.contains(node); }
