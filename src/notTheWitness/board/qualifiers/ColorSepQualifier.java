@@ -5,7 +5,10 @@ import java.awt.*;
 import notTheWitness.board.*;
 
 public class ColorSepQualifier extends ColoredQualifier<Cell> {
-
+  public static final int RADIUS = 8,
+      WIDTH = RADIUS + RADIUS, 
+      CORNER_RADIUS = 4;
+  
 	public ColorSepQualifier(Color color) {
 		super(color);
 	}
@@ -13,7 +16,7 @@ public class ColorSepQualifier extends ColoredQualifier<Cell> {
 	@Override
 	public void paint(Graphics2D g, int x, int y) {
 		applyColor(g);
-		g.fillRoundRect(x, y, 5, 5, 2, 2);
+		g.fillRoundRect(x - RADIUS, y - RADIUS, WIDTH, WIDTH, CORNER_RADIUS, CORNER_RADIUS);
 		
 	}
 
