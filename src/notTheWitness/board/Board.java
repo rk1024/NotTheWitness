@@ -165,13 +165,15 @@ public class Board implements Paintable {
     ++idx;
     
     if (idx == drawnNodes.size()) return;
+    if (idx == 0) { clearDrawn(); return; }
     
     while (drawnNodes.size() > idx) {
       Node rem = drawnNodes.pop();
       drawn.remove(rem);
       drawnSet.remove(rem);
     }
-    
+
+    updateOpenNodes();
     updateHighlights();
   }
   
@@ -184,6 +186,8 @@ public class Board implements Paintable {
     drawn.clear();
     drawnSet.clear();
     drawnNodes.clear();
+    updateHighlights();
+    updateOpenNodes();
   }
   
   private void mouseDraw(int x, int y) {
@@ -194,8 +198,6 @@ public class Board implements Paintable {
     
       if (hit != null) {
         backtrack(hit.getNode());
-        updateOpenNodes();
-        
         return;
       }
     }
@@ -222,8 +224,6 @@ public class Board implements Paintable {
       
       if (hit != null) {
         backtrack(hit.getNode());
-        updateOpenNodes();
-        
         return;
       }
     }
@@ -245,6 +245,10 @@ public class Board implements Paintable {
   
   public void handlePress(MouseEvent e) {
     int x = e.getX(), y = e.getY();
+    
+    BoardHitResult hitResult = hitTestNodes(path.getNodes(), x, y, false);
+    if (hitResult != null && hitResult.getNode().getNodeType() == Node.TYPE_START)
+      clearDrawn();
     
     canHandleDrag = drawnNodes.size() == 0 ? hitTestNodes(openNodes, x, y, false) != null : hitTestNodes(drawnNodes, x, y, false) != null;
     
@@ -304,5 +308,10 @@ public class Board implements Paintable {
         if (node.getNodeType() == Node.TYPE_END) highlight(node);
       }
     }
+  }
+  
+  public void init() {
+    updateOpenNodes();
+    updateHighlights();
   }
 }
