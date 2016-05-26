@@ -20,7 +20,10 @@ public class NodeGraph {
   
   public int nodeCount() { return nodes.size(); }
   public int edgeCount() { return edges.size(); }
-  public int edgeCount(Node connectedTo) { return edgeMap.get(connectedTo).size(); }
+  public int edgeCount(Node connectedTo) { 
+    if (!edgeMap.containsKey(connectedTo)) return 0;
+    return edgeMap.get(connectedTo).size();
+  }
   
   public boolean contains(Node node) { return nodes.contains(node); }
   
