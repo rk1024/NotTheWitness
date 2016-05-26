@@ -36,6 +36,10 @@ public class Edge {
   
   public boolean hasQualifier() { return qual != null; }
   
+  public int getX() { return Math.round((nodeA.getX() + nodeB.getX()) / 2f); } 
+  public int getY() { return Math.round((nodeA.getY() + nodeB.getY()) / 2f); } 
+
+  
   public boolean connects(Node a, Node b) {
     return (a == nodeA && b == nodeB) ||
         (a == nodeB && b == nodeA);

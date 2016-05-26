@@ -124,6 +124,14 @@ public class Board implements Paintable {
     		node.getQualifier().paint(g, node.getX(), node.getY());
     }
     
+    for( Edge edge : path.getEdges()) {
+      if (edge.hasQualifier()) {
+        edge.getQualifier().paint(g, edge.getX(), edge.getY());
+      }
+    }
+    
+    cells.paint(g);
+    
     g.setColor(isInvalid ? new Color(.85f, .05f, .05f) : new Color(0f, .5f, 1f));
     paintNodeGraph(drawn, g);
     
@@ -134,8 +142,6 @@ public class Board implements Paintable {
       g.fillOval(node.getX() - HL1_RADIUS, node.getY() - HL1_RADIUS, HL1_WIDTH, HL1_WIDTH);
       g.fillOval(node.getX() - HL2_RADIUS, node.getY() - HL2_RADIUS, HL2_WIDTH, HL2_WIDTH);
     }
-    
-    cells.paint(g);
   }
   
   private int hitRadius(Node node, int x, int y) {
@@ -253,6 +259,26 @@ public class Board implements Paintable {
   			  }
   		  }
   		}
+  	}
+  	
+//  	for(int i = 1; i < drawnNodes.size(); i++) {
+//  	  Edge edge = path.getEdge(drawnNodes.get(i - 1), drawnNodes.get(i));
+//  	  if (edge.hasQualifier()) {
+//  	    if (edge.getQualifier() instanceof EdgeDetourQualifier) {
+//  	      
+//  	    }
+//  	  }
+//  	  
+//  	}
+  	  
+  	for(Edge edge : path.getEdges()) {
+  	  if(edge.hasQualifier()) {
+  	    if(edge.getQualifier() instanceof EdgeDetourQualifier) {
+  	      if(!drawn.connected(edge.getNodeA(), edge.getNodeB())) {
+  	        return false;
+  	      }
+  	    }
+  	  }
   	}
   	
     return true;

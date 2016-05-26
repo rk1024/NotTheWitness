@@ -102,6 +102,8 @@ public class Game extends JPanel {
     t.setNodeQualifier(0, 1, new NodeDetourQualifier());
     t.setNodeQualifier(1, 0, new NodeDetourQualifier());
     
+    t.setHEdgeQualifier(5, 5, new EdgeDetourQualifier());
+    
     t.setCellQualifier(0, 0, new ColorSepQualifier(new Color(1f, .5f, 0f)));
     
     this.currentBoard = t.getBoard();
