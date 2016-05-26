@@ -9,15 +9,22 @@ import notTheWitness.board.qualifiers.*;
 
 public class Board implements Paintable {
   public class BoardFragment {
+    private HashSet<Cell> cells = new HashSet<Cell>();
     private HashSet<Qualifier<Node>> nodeQuals = new HashSet<Qualifier<Node>>();
     private HashSet<Qualifier<Edge>> edgeQuals = new HashSet<Qualifier<Edge>>();
     private HashSet<Qualifier<Cell>> cellQuals = new HashSet<Qualifier<Cell>>();
     
     public BoardFragment() { }
     
+    public Iterable<Cell> getCells() { return cells; }
     public Iterable<Qualifier<Node>> getNodeQuals() { return nodeQuals; }
     public Iterable<Qualifier<Edge>> getEdgeQuals() { return edgeQuals; }
     public Iterable<Qualifier<Cell>> getCellQuals() { return cellQuals; }
+    
+    public boolean addCell(Cell cell) { return cells.add(cell); }
+    public boolean addNodeQual(Qualifier<Node> qual) { return nodeQuals.add(qual); }
+    public boolean addEdgeQual(Qualifier<Edge> qual) { return edgeQuals.add(qual); }
+    public boolean addCellQual(Qualifier<Cell> qual) { return cellQuals.add(qual); }
   }
   
   public static final int PATH_RADIUS = 8,
@@ -37,6 +44,7 @@ public class Board implements Paintable {
   private HashSet<Node> openNodes = new HashSet<Node>(),
       hlNodes = new HashSet<Node>(),
       drawnSet = new HashSet<Node>();
+//  private ArrayList<BoardFragment> frags;
   private Stack<Node> drawnNodes = new Stack<Node>();
   private NodeGraph path, drawn = new NodeGraph();
   private CellGraph cells;
@@ -128,10 +136,46 @@ public class Board implements Paintable {
   }
   
   private ArrayList<BoardFragment> getFragments() {
-    HashSet<Cell> pool = new HashSet<Cell>();
+    HashSet<Cell> checked = new HashSet<Cell>();
+    ArrayDeque<Cell> queue = new ArrayDeque<Cell>();
+    ArrayList<BoardFragment> frags = new ArrayList<BoardFragment>();
     
-    for (Cell cell : cells.getCells()) pool.add(cell);
-    return null;
+    for (Cell start : cells.getCells()) {
+      if (checked.contains(start)) continue;
+      
+      BoardFragment frag = new BoardFragment();
+      frags.add(frag);
+      
+      queue.addLast(start);
+      
+      while (queue.peekFirst() != null) {
+        Cell cell = queue.pollFirst();
+        if (!checked.add(cell)) continue;
+        
+        frag.addCell(cell);
+        frag.addCellQual(cell.getQualifier());
+        
+        for (Edge edge : cell.getEdges()) {
+          if (drawn.connected(edge.getNodeA(), edge.getNodeB())) continue;
+          
+          if (edge.getQualifier() != null) frag.addEdgeQual(edge.getQualifier());
+          
+          if (!(drawn.contains(edge.getNodeA()) || edge.getNodeA().getQualifier() == null)) frag.addNodeQual(edge.getNodeA().getQualifier());
+          if (!(drawn.contains(edge.getNodeB()) || edge.getNodeB().getQualifier() == null)) frag.addNodeQual(edge.getNodeB().getQualifier());
+          
+          for (Cell bordering : cells.getCells(new Node[] {
+            edge.getNodeA(),
+            edge.getNodeB(),
+          })) {
+            if (bordering == cell) continue;
+            
+            queue.addLast(bordering);
+          }
+        }
+      }
+    }
+    
+    return frags;
   }
   
   public void paint(Graphics2D g) {
@@ -150,6 +194,16 @@ public class Board implements Paintable {
     }
     
     cells.paint(g);
+    
+    g.setColor(Color.WHITE);
+    
+//    if (frags != null) {
+//      for (int i = 0; i < frags.size(); i++) {
+//        for (Cell cell : frags.get(i).getCells()) {
+//          g.drawString(i + "", cell.getX(), cell.getY());
+//        }
+//      }
+//    }
     
     g.setColor(isInvalid ? new Color(.85f, .05f, .05f) : new Color(0f, .5f, 1f));
     paintNodeGraph(drawn, g);
@@ -279,16 +333,6 @@ public class Board implements Paintable {
   		  }
   		}
   	}
-  	
-//  	for(int i = 1; i < drawnNodes.size(); i++) {
-//  	  Edge edge = path.getEdge(drawnNodes.get(i - 1), drawnNodes.get(i));
-//  	  if (edge.hasQualifier()) {
-//  	    if (edge.getQualifier() instanceof EdgeDetourQualifier) {
-//  	      
-//  	    }
-//  	  }
-//  	  
-//  	}
   	  
   	for(Edge edge : path.getEdges()) {
   	  if(edge.hasQualifier()) {
@@ -296,6 +340,20 @@ public class Board implements Paintable {
   	      if(!drawn.connected(edge.getNodeA(), edge.getNodeB())) {
   	        return false;
   	      }
+  	    }
+  	  }
+  	}
+  	
+  	ArrayList<BoardFragment> frags = getFragments();
+  	
+  	for (BoardFragment frag : frags) {
+  	  Color firstSepColor = null;
+  	  
+  	  for (Qualifier<Cell> qual : frag.getCellQuals()) {
+  	    if (qual instanceof ColorSepQualifier) {
+  	      ColorSepQualifier castQual = (ColorSepQualifier)qual;
+  	      if (firstSepColor == null) firstSepColor = castQual.getColor();
+  	      else if (castQual.getColor().getRGB() != firstSepColor.getRGB()) return false;
   	    }
   	  }
   	}
@@ -351,6 +409,8 @@ public class Board implements Paintable {
       
       if (!drawnSet.contains(other)) openNode(other);
     }
+    
+//    frags = getFragments();
   }
   
   private void updateHighlights() {

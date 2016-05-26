@@ -6,7 +6,7 @@ import notTheWitness.board.qualifiers.Qualifier;
 
 public class Cell {
   private ArrayList<Node> nodeList;
-  private ArrayList<Edge> edgeList;
+  private ArrayList<Edge> edgeList = new ArrayList<Edge>();
   private HashSet<Node> nodes = new HashSet<Node>();
   private HashSet<Edge> edges = new HashSet<Edge>();
   private Qualifier<Cell> qual = null;
@@ -29,7 +29,11 @@ public class Cell {
     for (int i = 0; i < nodeList.size(); i++) {
       Node node = nodeList.get(i);
       nodes.add(node);
-      edges.add(sourceGraph.getEdge(node, nodeList.get((i + 1) % nodeList.size())));
+      
+      Edge edge = sourceGraph.getEdge(node, nodeList.get((i + 1) % nodeList.size()));
+      
+      edgeList.add(edge);
+      edges.add(edge);
     }
     
     if (nodeList.size() > 0) {

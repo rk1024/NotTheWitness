@@ -104,7 +104,10 @@ public class Game extends JPanel {
     
     t.setHEdgeQualifier(5, 5, new EdgeDetourQualifier());
     
-    t.setCellQualifier(0, 0, new ColorSepQualifier(new Color(1f, .5f, 0f)));
+    t.setCellQualifier(0, 0, new ColorSepQualifier(Color.WHITE));
+    t.setCellQualifier(1, 4, new ColorSepQualifier(Color.WHITE));
+    t.setCellQualifier(2, 0, new ColorSepQualifier(Color.BLACK));
+    t.setCellQualifier(6, 6, new ColorSepQualifier(Color.BLACK));
     
     this.currentBoard = t.getBoard();
     
