@@ -8,6 +8,18 @@ import notTheWitness.*;
 import notTheWitness.board.qualifiers.*;
 
 public class Board implements Paintable {
+  public class BoardFragment {
+    private HashSet<Qualifier<Node>> nodeQuals = new HashSet<Qualifier<Node>>();
+    private HashSet<Qualifier<Edge>> edgeQuals = new HashSet<Qualifier<Edge>>();
+    private HashSet<Qualifier<Cell>> cellQuals = new HashSet<Qualifier<Cell>>();
+    
+    public BoardFragment() { }
+    
+    public Iterable<Qualifier<Node>> getNodeQuals() { return nodeQuals; }
+    public Iterable<Qualifier<Edge>> getEdgeQuals() { return edgeQuals; }
+    public Iterable<Qualifier<Cell>> getCellQuals() { return cellQuals; }
+  }
+  
   public static final int PATH_RADIUS = 8,
       PATH_WIDTH = PATH_RADIUS + PATH_RADIUS,
       SP_RADIUS = PATH_RADIUS + 10,
@@ -115,6 +127,13 @@ public class Board implements Paintable {
     }
   }
   
+  private ArrayList<BoardFragment> getFragments() {
+    HashSet<Cell> pool = new HashSet<Cell>();
+    
+    for (Cell cell : cells.getCells()) pool.add(cell);
+    return null;
+  }
+  
   public void paint(Graphics2D g) {
     g.setColor(new Color(.5f, .5f, .5f));
     paintNodeGraph(path, g);
@@ -124,7 +143,7 @@ public class Board implements Paintable {
     		node.getQualifier().paint(g, node.getX(), node.getY());
     }
     
-    for( Edge edge : path.getEdges()) {
+    for (Edge edge : path.getEdges()) {
       if (edge.hasQualifier()) {
         edge.getQualifier().paint(g, edge.getX(), edge.getY());
       }
