@@ -13,7 +13,9 @@ import notTheWitness.util.HashMap2D;
 @SuppressWarnings("serial")
 public class Game extends JPanel {
   public static final int CUR_RADIUS = 8,
-      CUR_WIDTH = CUR_RADIUS + CUR_RADIUS;
+      CUR_WIDTH = CUR_RADIUS + CUR_RADIUS,
+      MARGIN = 50,
+      DOUBLE_MARGIN = MARGIN + MARGIN;
   
   private Board currentBoard;
   private JFrame win = new JFrame("Not the Witness");
@@ -84,22 +86,42 @@ public class Game extends JPanel {
     hiddenCursor = tk.createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), "hidden");
     setCursor(hiddenCursor);
     
-    {
-      
-      HashMap2D<Integer, Integer, Qualifier<Node>> nodeQuals = new HashMap2D<Integer, Integer, Qualifier<Node>>();
-      nodeQuals.put(0, 1, new NodeDetourQualifier());
-      nodeQuals.put(1, 0, new NodeDetourQualifier());
-
-      int[][] hEdgeType = new int[10][9],
-          vEdgeType = new int[9][10];
-      
-      for (int i = 1; i <= 8; i++)
-        vEdgeType[0][i] = Edge.TYPE_NONE;
-      
-      hEdgeType[1][2] = Edge.TYPE_BLOCKED;
-      
-      this.currentBoard = BoardFactory.makeBoard(nodeQuals, hEdgeType, vEdgeType, 10, 10, BoardFactory.END_SIDE_RIGHT, 2);
-    }
+    BoardGridTemplate t = new BoardGridTemplate(10, 10, MARGIN, MARGIN, 1280 - DOUBLE_MARGIN, 720 - DOUBLE_MARGIN);
+    
+    t.setNodeType(0, 0, Node.TYPE_START);
+    t.setNodeType(9, 0, Node.TYPE_START);
+    
+    for (int i = 1; i <= 8; i++)
+      t.setVEdgeType(0, i, Edge.TYPE_NONE);
+    
+    t.setHEdgeType(1, 2, Edge.TYPE_BLOCKED);
+    
+    t.addEndPoint(BoardGridTemplate.END_SIDE_RIGHT, 2);
+    t.addEndPoint(BoardGridTemplate.END_SIDE_BOTTOM, 4);
+    
+    t.setNodeQualifier(0, 1, new NodeDetourQualifier());
+    t.setNodeQualifier(1, 0, new NodeDetourQualifier());
+    
+    t.setCellQualifier(0, 0, new ColorSepQualifier(new Color(1f, .5f, 0f)));
+    
+    this.currentBoard = t.getBoard();
+    
+//    {
+//      
+//      HashMap2D<Integer, Integer, Qualifier<Node>> nodeQuals = new HashMap2D<Integer, Integer, Qualifier<Node>>();
+//      nodeQuals.put(0, 1, new NodeDetourQualifier());
+//      nodeQuals.put(1, 0, new NodeDetourQualifier());
+//
+//      int[][] hEdgeType = new int[10][9],
+//          vEdgeType = new int[9][10];
+//      
+//      for (int i = 1; i <= 8; i++)
+//        vEdgeType[0][i] = Edge.TYPE_NONE;
+//      
+//      hEdgeType[1][2] = Edge.TYPE_BLOCKED;
+//      
+//      this.currentBoard = BoardFactory.makeBoard(nodeQuals, hEdgeType, vEdgeType, 10, 10, BoardFactory.END_SIDE_RIGHT, 2);
+//    }
     
     win.setVisible(true);
   }
@@ -119,6 +141,9 @@ public class Game extends JPanel {
       g2.setColor(Color.LIGHT_GRAY);
       g2.fillOval(mouseX - CUR_RADIUS, mouseY - CUR_RADIUS, CUR_WIDTH, CUR_WIDTH);
     }
+    
+    //g2.setColor(new Color(1f, 0f, 0f, .5f));
+    //g2.fillRect(MARGIN, MARGIN, getWidth() - DOUBLE_MARGIN, getHeight() - DOUBLE_MARGIN);
   }
   
   public static void main(String[] args) {
