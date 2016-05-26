@@ -22,7 +22,9 @@ public class Node {
   
   public int getX() { return x; }
   public int getY() { return y; }
+  
   public int getNodeType() { return nodeType; }
+  public void setNodeType(int value) { nodeType = value; }
   
   public Qualifier<Node> getQualifier() { return qual; }
   public void setQualifier(Qualifier<Node> value) {
