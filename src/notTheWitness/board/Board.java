@@ -8,11 +8,11 @@ import notTheWitness.*;
 import notTheWitness.board.qualifiers.*;
 
 public class Board implements Paintable {
-  public static final int PATH_RADIUS = 10,
+  public static final int PATH_RADIUS = 8,
       PATH_WIDTH = PATH_RADIUS + PATH_RADIUS,
-      SP_RADIUS = 20,
+      SP_RADIUS = PATH_RADIUS + 10,
       SP_WIDTH = SP_RADIUS + SP_RADIUS,
-      GAP_RADIUS = 6,
+      GAP_RADIUS = 4,
       GAP_RADIUS_SQ = GAP_RADIUS * GAP_RADIUS,
       HL_BORDER = 5,
       HL1_RADIUS = PATH_RADIUS + HL_BORDER,
