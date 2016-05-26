@@ -10,4 +10,8 @@ public abstract class ColoredQualifier<T> extends Qualifier<T> {
 	}
 	
 	public Color getColor() { return color; }
+	
+	protected void applyColor(Graphics2D g) {
+	  g.setColor(color);
+	}
 }
