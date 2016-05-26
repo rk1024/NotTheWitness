@@ -91,9 +91,11 @@ public class CellGraph implements Paintable {
       //g.setColor(new Color(1f, 0f, 0f, .5f));
       //g.fill(p);
       
-      g.setStroke(new BasicStroke(2));
-      g.setColor(new Color(0f, 0.5f, 1f));
-      g.drawOval(cell.getX() - 5, cell.getY() - 5, 10, 10);
+//      g.setStroke(new BasicStroke(2));
+//      g.setColor(new Color(0f, 0.5f, 1f));
+//      g.drawOval(cell.getX() - 5, cell.getY() - 5, 10, 10);
+      if (cell.hasQualifier())
+        cell.getQualifier().paint(g, cell.getX(), cell.getY());
     }
   }
   
